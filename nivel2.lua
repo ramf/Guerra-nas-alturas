@@ -347,7 +347,7 @@ function generateEnemyPlane()
 				generateEnemyPlane()
 				return
 			else
-			if(randomEnemyNumber == 1)then
+			if(randomEnemyNumber == 3)then
 				tempEnemy =  display.newImage("enemy1.png", (randomGridSpace*65)-28,-60)
 				tempEnemy.type = "regular"
 			elseif(randomEnemyNumber == 1) then
@@ -465,7 +465,7 @@ scoreNumber.yScale = 1.2
 local scoreText = display.newText("Score:", 400, 10, nil, 40)
 scoreNumber.xScale = 1.2
 
-local scoreText = display.newText("Nível 1", 30, 52, nil, 30)
+local scoreText = display.newText("Nível 2", 30, 52, nil, 30)
 scoreNumber.xScale = 1.2
 
 function checkPlayerBulletsCollideWithEnemyPlanes()

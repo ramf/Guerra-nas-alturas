@@ -15,7 +15,7 @@ function scene:createScene( event )
 		group:insert(startbutton)
 
 end
--- Chamado imediatamente após a cena mudar de tela:
+-- Called immediately after scene has moved onscreen:
 
 function startGame()
 	 storyboard.gotoScene("funcJogo")
