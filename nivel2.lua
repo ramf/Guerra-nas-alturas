@@ -1,5 +1,7 @@
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
+
+
 local playerSpeedY = 0
 local playerSpeedX = 0
 local playerMoveSpeed = 7
@@ -22,6 +24,7 @@ local freeLifes = {}
 
 local playerIsInvincible = false
 local gameOver = false
+local next_level = false
 local numberOfTicks = 0
 
 local islandGroup
@@ -81,17 +84,17 @@ function setupGroups()
      scene.view:insert(planeGroup)
 end
 function setupDisplay ()
-    local tempRect = display.newRect(0,display.contentHeight-70,display.contentWidth,124);
+    local tempRect = display.newRect(0,display.contentHeight-110,display.contentWidth,124);
 	tempRect:setFillColor(0,0,0);
 	scene.view:insert(tempRect)
 	--local logo = display.newImage("logo.png",display.contentWidth-139,display.contentHeight-70);
     --scene.view:insert(logo)
-    local dpad = display.newImage("dpad.png",10,display.contentHeight - 70)
+    local dpad = display.newImage("dpad.png",10,display.contentHeight - 110)
     scene.view:insert(dpad)
 end
 
 function setupPlayer()
-player = display.newImage("player.png",(display.contentWidth/2)-(playerWidth/2),(display.contentHeight - 70)-playerHeight)
+player = display.newImage("player.png",(display.contentWidth/2)-(playerWidth/2),(display.contentHeight - 170)-playerHeight)
 player.name = "Player"
 scene.view:insert(player)
 end
@@ -108,28 +111,28 @@ function setupLivesImages()
 end
 
 function setupDPad()
-	rectUp = display.newRect( 34, display.contentHeight-70, 23, 23)
+	rectUp = display.newRect( 50, display.contentHeight-110, 25, 25)
 	rectUp:setFillColor(1,0,0)
 	rectUp.id ="up"
 	rectUp.isVisible = false;
 	rectUp.isHitTestable = true;
 	scene.view:insert(rectUp)
 
-	rectDown = display.newRect( 34,display.contentHeight-23, 23,23)
+	rectDown = display.newRect( 49,display.contentHeight-23, 23,23)
 	rectDown:setFillColor(1,0,0)
 	rectDown.id ="down"
 	rectDown.isVisible = false;
 	rectDown.isHitTestable = true;
 	scene.view:insert(rectDown)
 
-	rectLeft = display.newRect( 10,display.contentHeight-47,23, 23)
+	rectLeft = display.newRect( 10,display.contentHeight-60,25, 25)
 	rectLeft:setFillColor(1,0,0)
 	rectLeft.id ="left"
 	rectLeft.isVisible = false;
 	rectLeft.isHitTestable = true;
 	scene.view:insert(rectLeft)
 
-	rectRight= display.newRect( 58,display.contentHeight-47, 23,23)
+	rectRight= display.newRect( 90,display.contentHeight-60, 25,25)
 	rectRight:setFillColor(1,0,0)
 	rectRight.id ="right"
 	rectRight.isVisible = false;
@@ -340,17 +343,17 @@ end
 
 function generateEnemyPlane()
 	if(gameOver ~= true) then
-		local randomGridSpace = math.random(11)
+		local randomGridSpace = math.random(8)
    	 local randomEnemyNumber = math.random(1)
 		local tempEnemy 
 			if(planeGrid[randomGridSpace]~=0) then
 				generateEnemyPlane()
 				return
 			else
-			if(randomEnemyNumber == 3)then
+			if(randomEnemyNumber == 1)then
 				tempEnemy =  display.newImage("enemy1.png", (randomGridSpace*65)-28,-60)
 				tempEnemy.type = "regular"
-			elseif(randomEnemyNumber == 1) then
+			elseif(randomEnemyNumber == 2) then
 				tempEnemy =  display.newImage("enemy2.png", display.contentWidth/2 - playerWidth/2,-60)
 				tempEnemy.type = "waver"
 			else
@@ -458,16 +461,26 @@ end
 local score = 0
 
 
-local scoreNumber = display.newText(score, 400, 50, nil, 22)
+local scoreNumber = display.newText(score, 530, 20, nil, 25)
 scoreNumber.xScale = 1.2
 scoreNumber.yScale = 1.2
 
 local scoreText = display.newText("Score:", 400, 10, nil, 40)
 scoreNumber.xScale = 1.2
 
-local scoreText = display.newText("Nível 2", 30, 52, nil, 30)
+local scoreText = display.newText("Nível 1", 30, 52, nil, 30)
 scoreNumber.xScale = 1.2
 
+--function next_level()
+--	if(scoreNumber = 1) then	
+--	next_level = true
+--	doNext_level()
+--	end
+--end
+
+function  doNext_level()
+	storyboard.gotoScene("nivel2")
+end
 function checkPlayerBulletsCollideWithEnemyPlanes()
 	if(#playerBullets > 0 and #enemyPlanes > 0) then
 		for i=#playerBullets,1,-1 do
