@@ -1,5 +1,7 @@
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
+
+
 local playerSpeedY = 0
 local playerSpeedX = 0
 local playerMoveSpeed = 7
@@ -458,7 +460,7 @@ end
 local score = 0
 
 
-local scoreNumber = display.newText(score, 400, 50, nil, 22)
+local scoreNumber = display.newText(score, 530, 20, nil, 25)
 scoreNumber.xScale = 1.2
 scoreNumber.yScale = 1.2
 

@@ -11,7 +11,7 @@ function scene:createScene( event )
 		--local bigplane = display.newImage("bigplane.png",0,0)
 		--group:insert(bigplane)
 		
-       startbutton= display.newImage("iniciar.png",264,670)
+       startbutton = display.newImage("iniciar.png",264,670)
 		group:insert(startbutton)
 
 end
