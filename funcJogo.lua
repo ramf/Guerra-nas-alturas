@@ -1,5 +1,5 @@
 local storyboard = require( "storyboard" )
-local scene = storyboard.newScene()
+local scene = storyboard.newScene()	
 
 
 local playerSpeedY = 0
@@ -22,6 +22,7 @@ local livesImages = {}
 local numberOfLives = 3
 local freeLifes = {}
 
+--local enemyGroup
 local playerIsInvincible = false
 local gameOver = false
 local next_level = false
@@ -30,7 +31,7 @@ local numberOfTicks = 0
 local islandGroup
 local planeGroup
 local player
-local  planeSoundChannel
+local planeSoundChannel
 local firePlayerBulletTimer
 local generateIslandTimer
 local fireEnemyBulletsTimer
@@ -39,6 +40,9 @@ local rectUp
 local rectDown
 local rectLeft
 local rectRight
+local tm
+--local tempEnemy
+local controleponto
 
 function scene:createScene( event )
         local group = self.view
@@ -49,15 +53,16 @@ function scene:createScene( event )
          setupLivesImages()
          setupDPad()
          resetPlaneGrid()
+         next_level()
 end
 -- "createScene" event is dispatched if scene's view does not exist
 scene:addEventListener( "createScene", scene )
 
-
+--
 function scene:enterScene( event )
         local group = self.view
-        local previousScene = storyboard.getPrevious()
-        storyboard.removeScene(previousScene)
+        --local previousScene = storyboard.getPrevious()
+        --storyboard.removeScene(previousScene)
 		rectUp:addEventListener( "touch", movePlane)
 		rectDown:addEventListener( "touch", movePlane)
 		rectLeft:addEventListener( "touch", movePlane)
@@ -67,30 +72,38 @@ function scene:enterScene( event )
        Runtime:addEventListener("enterFrame", gameLoop)
        startTimers()
        generateEnemys()
+       tm = timer.performWithDelay(10, next_level, 0)
 
 end
 scene:addEventListener( "enterScene", scene )
 
 function setupBackground ()
 		local background = display.newRect( 0, 0, display.contentWidth, display.contentHeight)
-		background:setFillColor( 0,0,1)
+		background:setFillColor( 0,.70,1)
 		scene.view:insert(background)
 end
 
 function setupGroups()
 	 islandGroup = display.newGroup()
      planeGroup = display.newGroup()
+     enemyGroup = display.newGroup()
      scene.view:insert(islandGroup)
      scene.view:insert(planeGroup)
+     scene.view:insert(enemyGroup)
+
 end
 function setupDisplay ()
     local tempRect = display.newRect(0,display.contentHeight-110,display.contentWidth,124);
 	tempRect:setFillColor(0,0,0);
 	scene.view:insert(tempRect)
-	--local logo = display.newImage("logo.png",display.contentWidth-139,display.contentHeight-70);
-    --scene.view:insert(logo)
-    local dpad = display.newImage("dpad.png",10,display.contentHeight - 110)
-    scene.view:insert(dpad)
+	local direita = display.newImage("direita.png",display.contentWidth-100,display.contentHeight-90);
+    scene.view:insert(direita)
+    local esquerda = display.newImage("esquerda.png",display.contentWidth-190,display.contentHeight-90);
+    scene.view:insert(esquerda)
+    local cima = display.newImage("cima.png",10,display.contentHeight - 110)
+    scene.view:insert(cima)
+    local baixo = display.newImage("baixo.png",10,display.contentHeight - 75)
+    scene.view:insert(baixo)
 end
 
 function setupPlayer()
@@ -101,7 +114,7 @@ end
 
 function setupLivesImages()
 	for i = 1, 6 do
- 		local tempLifeImage = display.newImage("life.png",  40* i - 20, 20)
+ 		local tempLifeImage = display.newImage("imagens/life.png",  40* i - 20, 20)
  		table.insert(livesImages,tempLifeImage)
  		scene.view:insert(tempLifeImage)
  		if( i > 3) then
@@ -111,28 +124,28 @@ function setupLivesImages()
 end
 
 function setupDPad()
-	rectUp = display.newRect( 50, display.contentHeight-110, 25, 25)
+	rectUp = display.newRect( 45, display.contentHeight-95, 25, 30)
 	rectUp:setFillColor(1,0,0)
 	rectUp.id ="up"
 	rectUp.isVisible = false;
 	rectUp.isHitTestable = true;
 	scene.view:insert(rectUp)
 
-	rectDown = display.newRect( 49,display.contentHeight-23, 23,23)
+	rectDown = display.newRect( 45,display.contentHeight-50, 20,80)
 	rectDown:setFillColor(1,0,0)
 	rectDown.id ="down"
 	rectDown.isVisible = false;
 	rectDown.isHitTestable = true;
 	scene.view:insert(rectDown)
 
-	rectLeft = display.newRect( 10,display.contentHeight-60,25, 25)
+	rectLeft = display.newRect( 590,display.contentHeight-60,25, 25)
 	rectLeft:setFillColor(1,0,0)
 	rectLeft.id ="left"
 	rectLeft.isVisible = false;
 	rectLeft.isHitTestable = true;
 	scene.view:insert(rectLeft)
 
-	rectRight= display.newRect( 90,display.contentHeight-60, 25,25)
+	rectRight= display.newRect( 690,display.contentHeight-60, 25,25)
 	rectRight:setFillColor(1,0,0)
 	rectRight.id ="right"
 	rectRight.isVisible = false;
@@ -217,6 +230,7 @@ function startTimers()
      generateIslandTimer = timer.performWithDelay( 5000, generateIsland ,-1)
      generateFreeLifeTimer = timer.performWithDelay(7000,generateFreeLife, - 1)
        fireEnemyBulletsTimer = timer.performWithDelay(2000,fireEnemyBullets,-1)
+       
 end
 
 function movePlayerBullets()
@@ -268,7 +282,7 @@ function  checkIslandsOutOfBounds()
 	if(numberOfLives >= 6) then
 		return
 	end
-	local freeLife = display.newImage("newlife.png", math.random(0,display.contentWidth - 40), 0);
+	local freeLife = display.newImage("imagens/newlife.png", math.random(0,display.contentWidth - 40), 0);
 	table.insert(freeLifes,freeLife)
 	planeGroup:insert(freeLife)
 end 
@@ -353,6 +367,7 @@ function generateEnemyPlane()
 			if(randomEnemyNumber == 1)then
 				tempEnemy =  display.newImage("enemy1.png", (randomGridSpace*65)-28,-60)
 				tempEnemy.type = "regular"
+				--scene.view:insert(tempEnemy)
 			elseif(randomEnemyNumber == 2) then
 				tempEnemy =  display.newImage("enemy2.png", display.contentWidth/2 - playerWidth/2,-60)
 				tempEnemy.type = "waver"
@@ -362,7 +377,9 @@ function generateEnemyPlane()
 			end
 			planeGrid[randomGridSpace] = 1
 	    	table.insert(enemyPlanes,tempEnemy)
-	   	 planeGroup:insert(tempEnemy)
+	    	--enemyGroup:insert(tempEnemy)
+	   	   	planeGroup:insert(tempEnemy)
+	   	    --scene.view:insert(tempEnemy)
 	    	numberOfEnemysGenerated = numberOfEnemysGenerated+1;
 			end
        	 if(numberOfEnemysGenerated == numberOfEnemysToGenerate)then
@@ -461,26 +478,25 @@ end
 local score = 0
 
 
-local scoreNumber = display.newText(score, 530, 20, nil, 25)
+local scoreNumber = display.newText(score, 460, 10, "Sabo Filled", 26)
 scoreNumber.xScale = 1.2
 scoreNumber.yScale = 1.2
 
-local scoreText = display.newText("Score:", 400, 10, nil, 40)
+local scoreText = display.newText("Pontos:", 300, 10, "Sabo Filled", 30)
 scoreNumber.xScale = 1.2
 
-local scoreText = display.newText("Nível 1", 30, 52, nil, 30)
+local levelText = display.newText("Nível 1", 30, 52, "Sabo Filled", 30)
 scoreNumber.xScale = 1.2
 
---function next_level()
---	if(scoreNumber = 1) then	
---	next_level = true
---	doNext_level()
---	end
---end
-
-function  doNext_level()
+function next_level()
+	if (controleponto == 1) then	
+    display.remove( scoreNumber )
+    display.remove( scoreText )
+    display.remove( levelText )
 	storyboard.gotoScene("nivel2")
+	end
 end
+
 function checkPlayerBulletsCollideWithEnemyPlanes()
 	if(#playerBullets > 0 and #enemyPlanes > 0) then
 		for i=#playerBullets,1,-1 do
@@ -492,6 +508,8 @@ function checkPlayerBulletsCollideWithEnemyPlanes()
 				    generateExplosion(enemyPlanes[j].x,enemyPlanes[j].y)
                     
                     scoreNumber.text = tostring(tonumber(scoreNumber.text) + 1)
+
+                    controleponto = tonumber(scoreNumber.text)
 
 				    enemyPlanes[j]:removeSelf()
 				    enemyPlanes[j] = nil
@@ -555,6 +573,9 @@ function killPlayer()
 end
 
 function  doGameOver()
+	display.remove( scoreNumber )
+    display.remove( scoreText )
+    display.remove( levelText )
 	storyboard.gotoScene("gameover")
 end
 
@@ -591,6 +612,7 @@ function   checkEnemyPlaneCollideWithPlayer()
 end
 
 -- Called when scene is about to move offscreen:
+
 function scene:exitScene( event )
         local group = self.view
         rectUp:removeEventListener( "touch", movePlane)
@@ -601,6 +623,10 @@ function scene:exitScene( event )
         audio.dispose(planeSoundChannel)
        Runtime:removeEventListener("enterFrame", gameLoop)
        cancelTimers()
+       storyboard.removeScene("inicia")
+       storyboard.removeScene("gameover")
+       storyboard.removeScene("fimDejogo")
+
 end
 scene:addEventListener( "exitScene", scene )
 function cancelTimers()
@@ -608,5 +634,7 @@ function cancelTimers()
 	timer.cancel(generateIslandTimer)
 	timer.cancel(fireEnemyBulletsTimer)
 	timer.cancel(generateFreeLifeTimer)
+	timer.cancel(tm)
+
 end
 return scene
