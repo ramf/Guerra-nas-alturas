@@ -26,6 +26,9 @@ function scene:createScene( event )
         group:insert(botaomenu)
         display.remove( scoreNumber )
         display.remove( scoreText )
+
+        local pontuacaoFinal = display.newText(scoreFinal, display.contentWidth/4 + 350 , 380, 'Sabo Filled', 70)
+        group:insert(pontuacaoFinal)
  end
 
 function scene:enterScene( event )

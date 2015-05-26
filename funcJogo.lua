@@ -28,6 +28,8 @@ local gameOver = false
 local next_level = false
 local numberOfTicks = 0
 
+scoreFinal = 0
+
 local islandGroup
 local planeGroup
 local player
@@ -508,6 +510,7 @@ function checkPlayerBulletsCollideWithEnemyPlanes()
 				    generateExplosion(enemyPlanes[j].x,enemyPlanes[j].y)
                     
                     scoreNumber.text = tostring(tonumber(scoreNumber.text) + 1)
+                    scoreFinal = tonumber(scoreNumber.text)
 
                     controleponto = tonumber(scoreNumber.text)
 
